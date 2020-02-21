@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/l-lin/fizzbuzz?status.svg)](https://pkg.go.dev/github.com/l-lin/fizzbuzz)
 ![Go](https://github.com/l-lin/fizzbuzz/workflows/Go/badge.svg)
 
-> Fizzbuzz in a web server
+> Fizz-buzz in a web server
 
 ## Getting started
 
