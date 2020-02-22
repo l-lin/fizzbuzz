@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/l-lin/fizzbuzz/model"
 )
 
 func TestFizzBuzzHandler(t *testing.T) {
@@ -14,11 +16,11 @@ func TestFizzBuzzHandler(t *testing.T) {
 		responseStatus int
 	}
 	var tests = map[string]struct {
-		given    fizzBuzzInput
+		given    model.Parameters
 		expected expected
 	}{
 		"classic": {
-			given: fizzBuzzInput{
+			given: model.Parameters{
 				Int1: 3, Int2: 5, Limit: 30,
 				Str1: "Fizz", Str2: "Buzz",
 			},
@@ -29,20 +31,20 @@ func TestFizzBuzzHandler(t *testing.T) {
 			},
 		},
 		"limit not set": {
-			given: fizzBuzzInput{
+			given: model.Parameters{
 				Int1: 3, Int2: 5,
 				Str1: "Fizz", Str2: "Buzz",
 			},
 			expected: expected{
-				responseBody: `{"error":"Key: 'fizzBuzzInput.Limit' Error:Field validation for 'Limit' failed on the 'required' tag"}
+				responseBody: `{"error":"Key: 'Parameters.Limit' Error:Field validation for 'Limit' failed on the 'required' tag"}
 `,
 				responseStatus: http.StatusBadRequest,
 			},
 		},
 		"no input set": {
-			given: fizzBuzzInput{},
+			given: model.Parameters{},
 			expected: expected{
-				responseBody: `{"error":"Key: 'fizzBuzzInput.Int1' Error:Field validation for 'Int1' failed on the 'required' tag\nKey: 'fizzBuzzInput.Int2' Error:Field validation for 'Int2' failed on the 'required' tag\nKey: 'fizzBuzzInput.Limit' Error:Field validation for 'Limit' failed on the 'required' tag\nKey: 'fizzBuzzInput.Str1' Error:Field validation for 'Str1' failed on the 'required' tag\nKey: 'fizzBuzzInput.Str2' Error:Field validation for 'Str2' failed on the 'required' tag"}
+				responseBody: `{"error":"Key: 'Parameters.Int1' Error:Field validation for 'Int1' failed on the 'required' tag\nKey: 'Parameters.Int2' Error:Field validation for 'Int2' failed on the 'required' tag\nKey: 'Parameters.Limit' Error:Field validation for 'Limit' failed on the 'required' tag\nKey: 'Parameters.Str1' Error:Field validation for 'Str1' failed on the 'required' tag\nKey: 'Parameters.Str2' Error:Field validation for 'Str2' failed on the 'required' tag"}
 `,
 				responseStatus: http.StatusBadRequest,
 			},
@@ -56,7 +58,10 @@ func TestFizzBuzzHandler(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			req, err := http.NewRequest("POST", "/fizz-buzz", bytes.NewReader(c))
+			req, err := http.NewRequest("POST", fizzBuzzRoute, bytes.NewReader(c))
+			if err != nil {
+				t.Fatal(err)
+			}
 			req.Header.Set("Content-Type", "application/json")
 			router.ServeHTTP(w, req)
 			if w.Code != tt.expected.responseStatus {
