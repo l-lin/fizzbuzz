@@ -50,7 +50,7 @@ func TestFizzBuzzHandler(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			router := NewRouter()
+			router := NewRouter("memory")
 			w := httptest.NewRecorder()
 			c, err := json.Marshal(tt.given)
 			if err != nil {

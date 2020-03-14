@@ -53,7 +53,7 @@ func statsMiddleWare(s *stats.Service) gin.HandlerFunc {
 		// ignore error, because GET methods do not have any request body
 		json.NewDecoder(r).Decode(&parameters)
 		c.Request.Body = ioutil.NopCloser(b)
-		go s.Increment(c.FullPath(), parameters)
+		go s.Increment(c.Request.URL.Path, parameters)
 		c.Next()
 	}
 }

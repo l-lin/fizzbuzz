@@ -13,12 +13,16 @@ const (
 	statsRoute    = "/requests/stats"
 )
 
+var repositories = map[stats.Mode]stats.Repository{
+	stats.Memory: memory.NewRepository(),
+}
+
 // NewRouter returns a router with the Logger and Recovery middlewares already attached
-func NewRouter() http.Handler {
+func NewRouter(statsStorageMode string) http.Handler {
 	gin.SetMode(gin.ReleaseMode)
 
-	// change the repository if we want to use another approach
-	s := stats.NewService(memory.NewRepository())
+	m := stats.GetMode(statsStorageMode)
+	s := stats.NewService(repositories[m])
 
 	r := gin.Default()
 	r.Use(statsMiddleWare(s))
