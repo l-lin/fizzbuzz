@@ -34,3 +34,60 @@ func Generate(int1, int2, limit int, str1, str2 string) ([]string, error) {
 	}
 	return result, nil
 }
+
+// ToParameters convert a generic map into fizz buzz parameters
+func ToParameters(m map[string]interface{}) (int, int, int, string, string, error) {
+	pc := parametersConverter{parameters: m}
+	int1 := pc.convertToInt("int1")
+	int2 := pc.convertToInt("int2")
+	limit := pc.convertToInt("limit")
+	str1 := pc.convertToString("str1")
+	str2 := pc.convertToString("str2")
+	if pc.err != nil {
+		return 0, 0, 0, "", "", pc.err
+	}
+	return int1, int2, limit, str1, str2, nil
+}
+
+type parametersConverter struct {
+	parameters map[string]interface{}
+	err        error
+}
+
+func (p *parametersConverter) convertToInt(key string) int {
+	if p.err != nil {
+		return 0
+	}
+	v, ok := p.parameters[key]
+	if !ok {
+		p.err = fmt.Errorf(`Parameter "%s" is required`, key)
+		return 0
+	}
+	i, ok := v.(int)
+	if !ok {
+		f, ok := v.(float64)
+		if !ok {
+			p.err = fmt.Errorf(`Parameter "%s" is required`, key)
+			return 0
+		}
+		return int(f)
+	}
+	return i
+}
+
+func (p *parametersConverter) convertToString(key string) string {
+	if p.err != nil {
+		return ""
+	}
+	v, ok := p.parameters[key]
+	if !ok {
+		p.err = fmt.Errorf(`Parameter "%s" is required`, key)
+		return ""
+	}
+	s, ok := v.(string)
+	if !ok {
+		p.err = fmt.Errorf(`Parameter "%s" is required`, key)
+		return ""
+	}
+	return s
+}

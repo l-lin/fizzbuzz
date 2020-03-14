@@ -1,9 +1,9 @@
 package memory
 
 import (
+	"reflect"
 	"sync"
 
-	"github.com/l-lin/fizzbuzz/model"
 	"github.com/l-lin/fizzbuzz/stats"
 )
 
@@ -32,16 +32,16 @@ func (r *Repository) GetAll() []*stats.Request {
 }
 
 // Increment number of hits in memory
-func (r *Repository) Increment(path string, p model.Parameters) {
+func (r *Repository) Increment(path string, input map[string]interface{}) {
 	// Using mutex to prevent when concurrent requests to write this shared resource
 	// at the same time, hence having a race condition problem
 	r.mutex.Lock()
 	{
-		req := r.find(path, p)
+		req := r.find(path, input)
 		if req == nil {
 			req = &stats.Request{
 				Path:       path,
-				Parameters: p,
+				Parameters: input,
 			}
 			r.requests = append(r.requests, req)
 		}
@@ -50,10 +50,10 @@ func (r *Repository) Increment(path string, p model.Parameters) {
 	r.mutex.Unlock()
 }
 
-func (r *Repository) find(path string, p model.Parameters) *stats.Request {
+func (r *Repository) find(path string, p map[string]interface{}) *stats.Request {
 	var result *stats.Request
 	for _, req := range r.requests {
-		if req.Path == path && req.Parameters.Equal(p) {
+		if req.Path == path && reflect.DeepEqual(req.Parameters, p) {
 			result = req
 		}
 	}

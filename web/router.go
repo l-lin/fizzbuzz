@@ -21,6 +21,7 @@ func NewRouter() http.Handler {
 	s := stats.NewService(memory.NewRepository())
 
 	r := gin.Default()
+	r.Use(statsMiddleWare(s))
 	r.POST(fizzBuzzRoute, fizzBuzzHandler(s))
 	r.GET(statsRoute, statsHandler(s))
 	return r

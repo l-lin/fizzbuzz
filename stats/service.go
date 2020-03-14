@@ -1,11 +1,9 @@
 package stats
 
-import "github.com/l-lin/fizzbuzz/model"
-
 // Repository to store stats
 type Repository interface {
 	GetAll() []*Request
-	Increment(path string, p model.Parameters)
+	Increment(path string, input map[string]interface{})
 }
 
 // Service to store stats
@@ -40,6 +38,6 @@ func (s *Service) GetMostUsed() *Request {
 }
 
 // Increment number of hits for a given path
-func (s *Service) Increment(path string, p model.Parameters) {
-	s.r.Increment(path, p)
+func (s *Service) Increment(path string, input map[string]interface{}) {
+	s.r.Increment(path, input)
 }

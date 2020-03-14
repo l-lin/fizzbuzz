@@ -3,8 +3,6 @@ package memory
 import (
 	"sync"
 	"testing"
-
-	"github.com/l-lin/fizzbuzz/model"
 )
 
 const (
@@ -12,12 +10,12 @@ const (
 	path   = "/foobar"
 )
 
-var parameters = model.Parameters{
-	Int1:  3,
-	Int2:  5,
-	Limit: 10,
-	Str1:  "Fizz",
-	Str2:  "Buzz",
+var parameters = map[string]interface{}{
+	"Int1":  3,
+	"Int2":  5,
+	"Limit": 10,
+	"Str1":  "Fizz",
+	"Str2":  "Buzz",
 }
 
 func TestIncrement(t *testing.T) {

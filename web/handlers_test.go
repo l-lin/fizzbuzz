@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/l-lin/fizzbuzz/model"
 )
 
 func TestFizzBuzzHandler(t *testing.T) {
@@ -16,13 +14,13 @@ func TestFizzBuzzHandler(t *testing.T) {
 		responseStatus int
 	}
 	var tests = map[string]struct {
-		given    model.Parameters
+		given    map[string]interface{}
 		expected expected
 	}{
 		"classic": {
-			given: model.Parameters{
-				Int1: 3, Int2: 5, Limit: 30,
-				Str1: "Fizz", Str2: "Buzz",
+			given: map[string]interface{}{
+				"int1": 3, "int2": 5, "limit": 30,
+				"str1": "Fizz", "str2": "Buzz",
 			},
 			expected: expected{
 				responseBody: `{"result":["1","2","Fizz","4","Buzz","Fizz","7","8","Fizz","Buzz","11","Fizz","13","14","FizzBuzz","16","17","Fizz","19","Buzz","Fizz","22","23","Fizz","Buzz","26","Fizz","28","29","FizzBuzz"]}
@@ -31,20 +29,20 @@ func TestFizzBuzzHandler(t *testing.T) {
 			},
 		},
 		"limit not set": {
-			given: model.Parameters{
-				Int1: 3, Int2: 5,
-				Str1: "Fizz", Str2: "Buzz",
+			given: map[string]interface{}{
+				"int1": 3, "int2": 5,
+				"str1": "Fizz", "str2": "Buzz",
 			},
 			expected: expected{
-				responseBody: `{"error":"Key: 'Parameters.Limit' Error:Field validation for 'Limit' failed on the 'required' tag"}
+				responseBody: `{"error":"Parameter \"limit\" is required"}
 `,
 				responseStatus: http.StatusBadRequest,
 			},
 		},
 		"no input set": {
-			given: model.Parameters{},
+			given: map[string]interface{}{},
 			expected: expected{
-				responseBody: `{"error":"Key: 'Parameters.Int1' Error:Field validation for 'Int1' failed on the 'required' tag\nKey: 'Parameters.Int2' Error:Field validation for 'Int2' failed on the 'required' tag\nKey: 'Parameters.Limit' Error:Field validation for 'Limit' failed on the 'required' tag\nKey: 'Parameters.Str1' Error:Field validation for 'Str1' failed on the 'required' tag\nKey: 'Parameters.Str2' Error:Field validation for 'Str2' failed on the 'required' tag"}
+				responseBody: `{"error":"Parameter \"int1\" is required"}
 `,
 				responseStatus: http.StatusBadRequest,
 			},

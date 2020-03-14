@@ -142,3 +142,123 @@ func TestGenerate(t *testing.T) {
 		})
 	}
 }
+
+func TestToParameters(t *testing.T) {
+	type expected struct {
+		int1, int2, limit int
+		str1, str2        string
+	}
+	var tests = map[string]struct {
+		given       map[string]interface{}
+		expected    expected
+		expectedErr bool
+	}{
+		"happy path": {
+			given: map[string]interface{}{
+				"int1": 3, "int2": 5, "limit": 30,
+				"str1": "Fizz", "str2": "Buzz",
+			},
+			expected: expected{
+				int1: 3, int2: 5, limit: 30,
+				str1: "Fizz", str2: "Buzz",
+			},
+			expectedErr: false,
+		},
+		"missing int1": {
+			given: map[string]interface{}{
+				"int2": 5, "limit": 30,
+				"str1": "Fizz", "str2": "Buzz",
+			},
+			expected: expected{
+				int1: 0, int2: 0, limit: 0,
+				str1: "", str2: "",
+			},
+			expectedErr: true,
+		},
+		"missing int2": {
+			given: map[string]interface{}{
+				"int1": 5, "limit": 30,
+				"str1": "Fizz", "str2": "Buzz",
+			},
+			expected: expected{
+				int1: 0, int2: 0, limit: 0,
+				str1: "", str2: "",
+			},
+			expectedErr: true,
+		},
+		"missing limit": {
+			given: map[string]interface{}{
+				"int1": 3, "int2": 5,
+				"str1": "Fizz", "str2": "Buzz",
+			},
+			expected: expected{
+				int1: 0, int2: 0, limit: 0,
+				str1: "", str2: "",
+			},
+			expectedErr: true,
+		},
+		"missing str1": {
+			given: map[string]interface{}{
+				"int1": 3, "int2": 5, "limit": 30,
+				"str1": "Fizz",
+			},
+			expected: expected{
+				int1: 0, int2: 0, limit: 0,
+				str1: "", str2: "",
+			},
+			expectedErr: true,
+		},
+		"missing str2": {
+			given: map[string]interface{}{
+				"int1": 3, "int2": 5, "limit": 30,
+				"str2": "Buzz",
+			},
+			expected: expected{
+				int1: 0, int2: 0, limit: 0,
+				str1: "", str2: "",
+			},
+			expectedErr: true,
+		},
+		"using float64 in int1": {
+			given: map[string]interface{}{
+				"int1": float64(3), "int2": 5, "limit": 30,
+				"str1": "Fizz", "str2": "Buzz",
+			},
+			expected: expected{
+				int1: 3, int2: 5, limit: 30,
+				str1: "Fizz", str2: "Buzz",
+			},
+			expectedErr: false,
+		},
+	}
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			actualInt1, actualInt2, actualLimit, actualStr1, actualStr2, actualErr := ToParameters(tt.given)
+			if tt.expectedErr {
+				if actualErr == nil {
+					t.Error("expected an error, got no error")
+				}
+			} else {
+				if actualErr != nil {
+					t.Errorf("expected no error, got error: %v", actualErr)
+				}
+				if actualInt1 != tt.expected.int1 {
+					t.Errorf("expected int1 %d, actual %d", tt.expected.int1, actualInt1)
+				}
+				if actualInt2 != tt.expected.int2 {
+					t.Errorf("expected int2 %d, actual %d", tt.expected.int2, actualInt2)
+				}
+				if actualLimit != tt.expected.limit {
+					t.Errorf("expected limit %d, actual %d", tt.expected.limit, actualLimit)
+				}
+				if actualStr1 != tt.expected.str1 {
+					t.Errorf("expected str1 %s, actual %s", tt.expected.str1, actualStr1)
+				}
+				if actualStr2 != tt.expected.str2 {
+					t.Errorf("expected str2 %s, actual %s", tt.expected.str2, actualStr2)
+				}
+			}
+		})
+	}
+
+}
