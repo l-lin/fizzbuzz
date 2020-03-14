@@ -10,7 +10,7 @@ import (
 
 const (
 	fizzBuzzRoute = "/fizz-buzz"
-	statsRoute    = "/stats"
+	statsRoute    = "/requests/stats"
 )
 
 // NewRouter returns a router with the Logger and Recovery middlewares already attached

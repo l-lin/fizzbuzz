@@ -46,16 +46,14 @@ func statsHandler(s *stats.Service) gin.HandlerFunc {
 
 func statsMiddleWare(s *stats.Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var parameters map[string]interface{}
 		b := bytes.NewBuffer(make([]byte, 0))
 		r := io.TeeReader(c.Request.Body, b)
 		defer c.Request.Body.Close()
-		var parameters map[string]interface{}
-		if err := json.NewDecoder(r).Decode(&parameters); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		go s.Increment(c.FullPath(), parameters)
+		// ignore error, because GET methods do not have any request body
+		json.NewDecoder(r).Decode(&parameters)
 		c.Request.Body = ioutil.NopCloser(b)
+		go s.Increment(c.FullPath(), parameters)
 		c.Next()
 	}
 }
