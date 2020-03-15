@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/l-lin/fizzbuzz/generator"
 	"github.com/l-lin/fizzbuzz/stats"
+	"github.com/rs/zerolog/log"
 )
 
 func fizzBuzzHandler(s *stats.Service) gin.HandlerFunc {
@@ -53,7 +54,11 @@ func statsMiddleWare(s *stats.Service) gin.HandlerFunc {
 		// ignore error, because GET methods do not have any request body
 		json.NewDecoder(r).Decode(&parameters)
 		c.Request.Body = ioutil.NopCloser(b)
-		go s.Increment(c.Request.URL.Path, parameters)
+		go func(path string, parameters map[string]interface{}) {
+			if err := s.Increment(path, parameters); err != nil {
+				log.Printf("[ERROR] %v", err)
+			}
+		}(c.Request.URL.Path, parameters)
 		c.Next()
 	}
 }

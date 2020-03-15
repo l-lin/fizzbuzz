@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/l-lin/fizzbuzz/stats/memory"
 )
 
 func TestFizzBuzzHandler(t *testing.T) {
@@ -50,7 +52,7 @@ func TestFizzBuzzHandler(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			router := NewRouter("memory")
+			router := NewRouter(memory.NewRepository())
 			w := httptest.NewRecorder()
 			c, err := json.Marshal(tt.given)
 			if err != nil {

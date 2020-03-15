@@ -1,9 +1,12 @@
 package stats
 
+import "io"
+
 // Repository to store stats
 type Repository interface {
 	GetAll() []*Request
-	Increment(path string, input map[string]interface{})
+	Increment(path string, input map[string]interface{}) error
+	io.Closer
 }
 
 // Service to store stats
@@ -38,6 +41,6 @@ func (s *Service) GetMostUsed() *Request {
 }
 
 // Increment number of hits for a given path
-func (s *Service) Increment(path string, input map[string]interface{}) {
-	s.r.Increment(path, input)
+func (s *Service) Increment(path string, input map[string]interface{}) error {
+	return s.r.Increment(path, input)
 }

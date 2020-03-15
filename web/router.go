@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/l-lin/fizzbuzz/stats"
-	"github.com/l-lin/fizzbuzz/stats/memory"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -13,20 +13,23 @@ const (
 	statsRoute    = "/requests/stats"
 )
 
-var repositories = map[stats.Mode]stats.Repository{
-	stats.Memory: memory.NewRepository(),
-}
-
 // NewRouter returns a router with the Logger and Recovery middlewares already attached
-func NewRouter(statsStorageMode string) http.Handler {
+func NewRouter(repo stats.Repository) http.Handler {
 	gin.SetMode(gin.ReleaseMode)
 
-	m := stats.GetMode(statsStorageMode)
-	s := stats.NewService(repositories[m])
+	s := stats.NewService(repo)
 
 	r := gin.Default()
 	r.Use(statsMiddleWare(s))
 	r.POST(fizzBuzzRoute, fizzBuzzHandler(s))
 	r.GET(statsRoute, statsHandler(s))
+	// for debugging purpose
+	for _, routeInfo := range r.Routes() {
+		log.Debug().
+			Str("path", routeInfo.Path).
+			Str("handler", routeInfo.Handler).
+			Str("method", routeInfo.Method).
+			Msg("registered routes")
+	}
 	return r
 }

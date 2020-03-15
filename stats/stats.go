@@ -4,5 +4,5 @@ package stats
 type Request struct {
 	Path       string                 `json:"path"`
 	NbHits     int                    `json:"nbHits"`
-	Parameters map[string]interface{} `json:"parameters"`
+	Parameters map[string]interface{} `json:"parameters,omitempty"`
 }

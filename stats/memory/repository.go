@@ -32,9 +32,9 @@ func (r *Repository) GetAll() []*stats.Request {
 }
 
 // Increment number of hits in memory
-func (r *Repository) Increment(path string, input map[string]interface{}) {
-	// Using mutex to prevent when concurrent requests to write this shared resource
-	// at the same time, hence having a race condition problem
+func (r *Repository) Increment(path string, input map[string]interface{}) error {
+	// Using mutex to prevent when concurrent requests write this shared resource
+	// at the same time, hence avoiding race condition problem
 	r.mutex.Lock()
 	{
 		req := r.find(path, input)
@@ -48,6 +48,13 @@ func (r *Repository) Increment(path string, input map[string]interface{}) {
 		req.NbHits++
 	}
 	r.mutex.Unlock()
+	return nil
+}
+
+// Close does nothing in memory mode
+func (r *Repository) Close() error {
+	// Do nothing
+	return nil
 }
 
 func (r *Repository) find(path string, p map[string]interface{}) *stats.Request {
